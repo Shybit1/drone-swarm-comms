@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package aerosyn;
+
+/**
+ * fire_data.proto
+ * 
+ * Fire state, detection, and suppression messages.
+ * Used for fire map updates and drone-to-fire-engine communication.
+ */
+
+// Fire cell state in the 2D grid
+message FireCell {
+  uint32 grid_x = 1;              // Grid x coordinate
+  uint32 grid_y = 2;              // Grid y coordinate
+  float intensity = 3;            // Burn intensity (0.0 = no fire, 1.0 = max)
+  float fuel_density = 4;         // Available fuel (0.0 to 1.0)
+  float temperature_k = 5;        // Temperature in Kelvin (ambient ~300K)
+  int64 ignition_time_us = 6;     // Time of ignition (sim microseconds)
+}
+
+// Fire spread state message
+// Published by fire simulation engine
+message FireMapState {
+  int64 timestamp_us = 1;         // Simulation timestamp
+  uint32 grid_width = 2;          // Grid dimensions (cells)
+  uint32 grid_height = 3;
+  repeated FireCell cells = 4;    // Only changed cells (delta updates)
+  
+  // Wind vector (affects spread direction)
+  float wind_speed_ms = 5;        // Wind speed (m/s)
+  float wind_direction_deg = 6;   // Wind direction (0-360 degrees, 0=North)
+  
+  // Global fire metrics
+  uint32 total_burning_cells = 7;
+  float max_intensity = 8;
+  uint32 perimeter_cells = 9;     // Cells on fire boundary
+}
+
+// Fire detection event from drone sensor
+message FireDetection {
+  uint32 drone_id = 1;
+  int64 detection_time_us = 2;
+  float detection_confidence = 3; // 0.0 to 1.0
+  
+  // Detected fire location (may be noisy)
+  float position_x = 4;           // meters, world frame
+  float position_y = 5;
+  float position_z = 6;           // altitude
+  
+  float intensity_estimate = 7;   // 0.0 to 1.0
+}
+
+// Fire suppression action (drone dropping water/foam)
+message FireSuppression {
+  uint32 drone_id = 1;
+  int64 suppression_time_us = 2;
+  float target_x = 3;             // Target grid x (meters)
+  float target_y = 4;             // Target grid y (meters)
+  float suppression_strength = 5; // 0.0 to 1.0 (effectiveness)
+  uint32 payload_used = 6;        // Payload units consumed
+}

@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package aerosyn;
+
+/**
+ * metrics.proto
+ * 
+ * Performance metrics and statistics for simulation monitoring.
+ * Aggregated by metrics collector and served to frontend.
+ */
+
+// Per-drone metrics snapshot
+message DroneMetrics {
+  uint32 drone_id = 1;
+  int64 timestamp_us = 2;
+  
+  // Navigation metrics
+  float total_distance_m = 3;     // Total distance traveled
+  float total_energy_used = 4;    // Energy consumed (0-1 scale)
+  uint32 battery_level = 5;       // Current battery %
+  
+  // Communication metrics
+  uint32 messages_sent = 6;       // Total DETM messages sent
+  uint32 messages_received = 7;
+  uint32 message_loss_count = 8;
+  float average_rssi_dbm = 9;
+  
+  // Fire suppression metrics
+  uint32 fires_detected = 10;
+  uint32 fires_suppressed = 11;
+  float total_suppression_strength = 12;
+  
+  // Coordination metrics
+  uint32 formation_conflicts = 13; // Avoided collisions
+  float average_neighbor_distance = 14;
+  
+  // Behavior state history (for trending)
+  uint32 time_in_search_us = 15;
+  uint32 time_in_suppress_us = 16;
+  uint32 time_in_rtl_us = 17;
+}
+
+// Swarm-level aggregated metrics
+message SwarmMetrics {
+  int64 timestamp_us = 1;
+  uint32 active_drones = 2;      // Currently operational drones
+  uint32 landed_drones = 3;      // Drones that have landed/docked
+  
+  // Global fire state
+  uint32 total_burning_cells = 4;
+  uint32 total_suppressed_cells = 5;
+  float fire_coverage_percent = 6;
+  
+  // Communication efficiency
+  uint32 total_messages = 7;
+  float average_message_interval_ms = 8; // DETM frequency
+  float network_utilization_percent = 9;
+  
+  // Energy state
+  float average_battery_percent = 10;
+  uint32 drones_critical_battery = 11;  // < 20%
+  
+  // Swarm cohesion
+  float average_formation_error = 12;
+  uint32 formation_breaks = 13;
+  
+  repeated DroneMetrics drone_metrics = 14; // Per-drone snapshots
+}
+
+// Latency measurement record (for performance analysis)
+message LatencyRecord {
+  uint32 sender_id = 1;
+  uint32 receiver_id = 2;
+  int64 message_send_time_us = 3;
+  int64 message_recv_time_us = 4;
+  uint32 latency_us = 5;
+  float rssi_at_receipt_dbm = 6;
+}

@@ -1,0 +1,166 @@
+# simulation_params.yaml
+# 
+# Core simulation parameters for AeroSyn-Sim
+# All values are tunable and loaded at runtime
+
+simulation:
+  name: "AeroSyn Disaster Response Swarm Simulation"
+  version: "1.0.0"
+  
+  # Time stepping
+  tick_rate_hz: 100                 # Simulation update frequency
+  max_sim_time_s: 3600              # Maximum simulation duration (seconds)
+  
+  # RNG seed for deterministic fire spread and physics
+  random_seed: 42
+
+# Swarm configuration
+swarm:
+  # Drone counts (overridden by --leaders and --followers args)
+  num_leaders: 3
+  num_followers: 6
+  
+  # SITL ArduPilot parameters
+  sitl_binary_path: "../Tools/autotest/sim_vehicle.py"
+  sitl_vehicle: "ArduCopter"
+  sitl_frame: "quad"
+  base_port: 14550                  # Base port for MAVLink (14550 + 10*i)
+  sitl_port_stride: 10              # Port increment per drone
+  udp_output_offset: 5              # Offset for UDP output port
+  
+  # Drone initial conditions
+  home_latitude: 40.2338            # Launch site (degrees)
+  home_longitude: -111.0934
+  home_altitude_m: 1300             # Above sea level
+  
+  # Flight performance
+  max_speed_ms: 20                  # Maximum speed (m/s)
+  cruise_speed_ms: 15
+  max_altitude_m: 2000              # Absolute ceiling
+  
+  # Battery model
+  battery_capacity_mah: 5000        # Battery capacity (mAh)
+  battery_voltage_v: 14.8           # Nominal voltage
+  max_hover_time_s: 1200            # Max hover with full battery (seconds)
+  energy_drain_per_meter: 0.08      # Energy (0-1 scale) per meter flown
+  energy_drain_hover_per_sec: 0.0001 # Energy per second hovering
+  battery_min_percent: 20.0         # RTL threshold
+  
+  # Payload capacity
+  max_payload_units: 40             # Maximum water/foam capacity
+  payload_drain_suppress: 1.0       # Payload units consumed per suppression action
+  
+  # Leader-Follower topology
+  leader_binding_radius_m: 500      # Max distance to maintain formation
+
+# Communication parameters
+communication:
+  # MQTT broker (MQLink mode)
+  mqtt_broker_host: "127.0.0.1"
+  mqtt_broker_port: 1883
+  mqtt_qos: 1                       # Quality of service
+  
+  # Ad-hoc RF (UAVConnector mode)
+  ad_hoc_broadcast_range_m: 100     # Virtual RF range
+  
+  # DETM (Dynamic Event-Triggered Mechanism)
+  detm_enabled: true
+  detm_eta0: 0.5                    # Initial trigger threshold
+  detm_lambda: 0.1                  # Exponential decay rate
+  detm_norm: "l2"                   # Norm type: l2 or l_inf
+  
+  # Packet loss and latency
+  packet_loss_probability: 0.05     # Base packet loss (5%)
+  packet_loss_rssi_threshold_dbm: -100 # Additional loss below this RSSI
+
+# Channel model (RF propagation)
+channel_model:
+  # Path loss model
+  reference_distance_m: 1.0
+  path_loss_exponent: 3.0           # Free space ≈ 2.0, urban ≈ 3.0-4.0
+  reference_rssi_dbm: -40           # RSSI at reference distance
+  
+  # Fading model (Rice distribution)
+  rice_k_factor: 8.0                # K-factor (8.0 = moderate fading)
+  fading_std_db: 2.0                # Standard deviation of fading
+  
+  # Receiver sensitivity
+  sensitivity_dbm: -110             # Sensitivity threshold
+  max_rssi_dbm: 0                   # Clipping (no signal above 0 dBm)
+  
+  # Latency injection
+  base_latency_ms: 5                # Base latency (ms)
+  latency_rssi_scale: 50            # Additional latency slope
+
+# Physics engine (fire and environment)
+fire_simulation:
+  # Grid configuration
+  grid_width_cells: 100             # Grid dimensions
+  grid_height_cells: 100
+  cell_size_meters: 10              # Physical size of each cell
+  
+  # Fire spread model (FARSITE-inspired)
+  spread_rate_base_mpm: 500.0       # Meters per minute base spread (fast for sim)
+  spread_rate_wind_scale: 2.0       # Wind speed multiplier
+  wind_speed_ms: 5.0                # Constant wind speed
+  wind_direction_deg: 45            # Constant wind direction (45=NE)
+  
+  # Fuel model
+  fuel_moisture_percent: 50         # Affects burn rate
+  fuel_density_factor: 1.0          # Overall fuel density
+  
+  # Fire extinguishing
+  suppression_effectiveness: 0.9    # How much suppression reduces burn rate
+  intensity_decay_factor: 0.95      # Natural intensity decay per tick
+  
+  # Initial fires
+  initial_fire_positions:           # Coordinates (meters) in grid
+    - {x: 250, y: 250}
+    - {x: 750, y: 750}
+
+# Swarm intelligence parameters
+swarm_intelligence:
+  # K-means clustering (initial deployment)
+  kmeans_n_clusters: 3              # Number of deployment zones
+  kmeans_max_iterations: 100
+  
+  # Lévy flight (random search)
+  levy_alpha: 1.5                   # Levy distribution parameter
+  levy_step_scale: 50               # Typical step length (meters)
+  levy_angular_scale: 180           # Angular scale (degrees)
+  
+  # Stigmergy (pheromone coordination)
+  pheromone_grid_width: 100         # Same as fire grid
+  pheromone_grid_height: 100
+  pheromone_deposit_strength: 1.0   # Strength when fire detected
+  pheromone_decay_factor: 0.95      # Decay per tick
+  pheromone_threshold: 0.1          # Gradient detection threshold
+  
+  # Distributed observer
+  observer_update_interval_ms: 50   # Estimate update frequency
+  observer_latency_timeout_ms: 500  # Assume constant velocity after this
+
+# Logging and output
+logging:
+  log_level: "INFO"                 # DEBUG, INFO, WARNING, ERROR
+  log_file: "aerosyn_sim.log"
+  log_drone_telemetry: true         # Log all drone states
+  log_fire_state: true              # Log fire grid changes
+  log_detm_triggers: true           # Log DETM transmission events
+  
+metrics:
+  enable_metrics_collection: true
+  metrics_publish_interval_ms: 100  # Frontend update frequency
+  latency_recording_enabled: true
+
+# Frontend configuration
+frontend:
+  web_server_host: "0.0.0.0"
+  web_server_port: 8080
+  api_base_path: "/api/v1"
+  websocket_endpoint: "/ws"
+  
+  # 3D visualization
+  max_visible_drones: 50
+  fire_visualization_scale: 1.0
+  heatmap_update_frequency_ms: 200

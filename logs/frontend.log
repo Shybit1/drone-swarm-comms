@@ -1,0 +1,10 @@
+
+> aerosyn-sim@1.0.0 start
+> vite
+
+Port 3000 is in use, trying another one...
+
+  VITE v4.5.14  ready in 6228 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: use --host to expose

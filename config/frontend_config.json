@@ -1,0 +1,49 @@
+{
+  "apiServer": {
+    "host": "127.0.0.1",
+    "port": 8080,
+    "basePath": "/api/v1",
+    "corsEnabled": true
+  },
+  "websocket": {
+    "endpoint": "/ws",
+    "reconnectInterval": 3000,
+    "maxReconnectAttempts": 10
+  },
+  "visualization": {
+    "canvasWidth": 1400,
+    "canvasHeight": 900,
+    "enableDroneLabels": true,
+    "enableFireMap": true,
+    "enableMetrics": true,
+    "theme": "dark"
+  },
+  "droneRendering": {
+    "droneSize": 2,
+    "leaderColor": "#FF6B6B",
+    "followerColor": "#4ECDC4",
+    "positionHistoryLength": 50,
+    "updateThrottle": 50
+  },
+  "fireVisualization": {
+    "gridCellSize": 10,
+    "colorMap": ["white", "yellow", "orange", "red", "darkred"],
+    "maxIntensity": 1.0,
+    "showIntensityValues": false
+  },
+  "dashboard": {
+    "metricsUpdateInterval": 500,
+    "chartHistoryLength": 300,
+    "showLatencyHistogram": true,
+    "showEnergyTrend": true,
+    "showFireCoverage": true
+  },
+  "controls": {
+    "enableSimulationStart": true,
+    "enablePause": true,
+    "enableStop": true,
+    "enableParameterTuning": false,
+    "allowFireIgnition": true,
+    "allowCommandInjection": false
+  }
+}

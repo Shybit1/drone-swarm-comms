@@ -1,0 +1,41 @@
+# Core Python Dependencies for AeroSyn-Sim
+# Autonomous Drone Swarm Simulation for Disaster Response
+
+# ArduPilot/MAVLink Integration
+pymavlink==2.4.38
+
+# Networking & Communication
+paho-mqtt==1.6.1
+protobuf==4.24.0
+
+# Numerical & Scientific Computing
+numpy==1.26.4
+scipy==1.14.0
+scikit-learn==1.5.0
+
+# Async & Concurrency
+asyncio-mqtt==0.16.1
+aiofiles==23.1.0
+
+# Web Framework & Real-time Communication
+flask==2.3.3
+flask-cors==4.0.0
+python-socketio==5.9.0
+python-engineio==4.7.1
+websockets==11.0.3
+
+# Configuration Management
+pyyaml==6.0.1
+python-dotenv==1.0.0
+
+# Logging & Monitoring
+loguru==0.7.0
+
+# Testing & Validation
+pytest==7.4.0
+pytest-cov==4.1.0
+pytest-asyncio==0.21.0
+
+# Utilities
+python-dateutil==2.8.2
+attrs==23.1.0

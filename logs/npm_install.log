@@ -1,0 +1,27 @@
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: react-scripts@5.0.1
+npm error Found: typescript@5.9.3
+npm error node_modules/typescript
+npm error   dev typescript@"^5.0.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional typescript@"^3.2.1 || ^4" from react-scripts@5.0.1
+npm error node_modules/react-scripts
+npm error   dev react-scripts@"5.0.1" from the root project
+npm error
+npm error Conflicting peer dependency: typescript@4.9.5
+npm error node_modules/typescript
+npm error   peerOptional typescript@"^3.2.1 || ^4" from react-scripts@5.0.1
+npm error   node_modules/react-scripts
+npm error     dev react-scripts@"5.0.1" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error C:\Users\anant\AppData\Local\npm-cache\_logs\2026-02-08T18_18_23_288Z-eresolve-report.txt
+npm error A complete log of this run can be found in: C:\Users\anant\AppData\Local\npm-cache\_logs\2026-02-08T18_18_23_288Z-debug-0.log

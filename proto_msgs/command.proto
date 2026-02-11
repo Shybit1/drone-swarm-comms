@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package aerosyn;
+
+/**
+ * command.proto
+ * 
+ * Command messages from swarm coordinator or external control to drones.
+ * Sent via MQTT or direct UDP.
+ */
+
+// Base command structure
+message DroneCommand {
+  uint32 target_drone_id = 1;  // 0 = broadcast to all
+  int64 command_id = 2;        // Unique command identifier
+  int64 issued_time_us = 3;    // Timestamp when issued
+  
+  enum CommandType {
+    NOP = 0;                   // No operation
+    TAKEOFF = 1;               // Launch drone
+    LAND = 2;                  // Land at current position
+    RETURN_TO_LAUNCH = 3;      // RTL to home position
+    RETURN_TO_DOCK = 4;        // RTL to dock station
+    GOTO_POSITION = 5;         // Navigate to absolute position
+    SUPPRESS_FIRE = 6;         // Suppress fire at coordinates
+    HOLD = 7;                  // Hold position (hovering)
+    RESUME = 8;                // Resume previous mission
+    SET_BATTERY_OVERRIDE = 9;  // Override battery threshold (testing)
+  }
+  CommandType command_type = 4;
+}
+
+// Detailed position command
+message GotoCommand {
+  float target_x = 1;         // Target position (meters)
+  float target_y = 2;
+  float target_z = 3;         // Target altitude
+  float max_speed = 4;        // Speed limit (m/s)
+  bool relative = 5;          // True = relative to current, False = absolute
+}
+
+// Suppress fire at specific location
+message SuppressionCommand {
+  float target_x = 1;         // Fire location (meters)
+  float target_y = 2;
+  float target_z = 3;         // Altitude to approach
+  float suppression_strength = 4; // 0.0 to 1.0
+}
+
+// Configuration command (testing/tuning)
+message ConfigCommand {
+  enum ConfigKey {
+    DETM_ETA0 = 0;            // DETM threshold base
+    DETM_LAMBDA = 1;          // DETM decay rate
+    BATTERY_MIN_PERCENT = 2;  // Minimum battery before RTL
+    PAYLOAD_MAX = 3;          // Maximum payload capacity
+    ENERGY_DRAIN_RATE = 4;    // Battery drain per distance
+  }
+  ConfigKey key = 1;
+  float value = 2;
+}

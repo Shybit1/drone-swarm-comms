@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package aerosyn;
+
+/**
+ * swarm_telemetry.proto
+ * 
+ * Serialized telemetry messages for drone-to-drone and drone-to-server communication.
+ * All drones publish serialized SwarmTelemetry to MQTT or broadcast UDP.
+ * Minimal field set optimized for bandwidth-constrained RF environment.
+ */
+
+// 3D position vector
+message Vector3 {
+  float x = 1;  // meters
+  float y = 2;  // meters
+  float z = 3;  // meters (altitude)
+}
+
+// 3D velocity vector
+message Vector3Vel {
+  float vx = 1;  // m/s
+  float vy = 2;  // m/s
+  float vz = 3;  // m/s (vertical velocity)
+}
+
+// Primary swarm telemetry message
+// Sent by each drone at DETM-gated frequency
+message SwarmTelemetry {
+  uint32 drone_id = 1;           // Unique identifier (1-indexed, 1 to N)
+  int64 timestamp_us = 2;        // Microseconds since sim start
+  Vector3 position = 3;          // Global position (NED or ENU)
+  Vector3Vel velocity = 4;       // Velocity components
+  float battery_percent = 5;     // 0.0 to 100.0
+  uint32 payload_remaining = 6;  // Units of payload (0 to max_payload)
+  uint32 fuel_distance_m = 7;    // Remaining fuel distance in meters
+  
+  // Drone state enumeration
+  enum DroneState {
+    IDLE = 0;
+    SEARCH = 1;
+    SUPPRESS = 2;
+    RETURN_TO_LAUNCH = 3;
+    RETURN_TO_DOCK = 4;
+    FORMATION = 5;
+  }
+  DroneState state = 8;
+  
+  // Fire detection (local sensor)
+  bool fire_detected = 9;
+  float fire_intensity = 10;      // 0.0 to 1.0 (if detected)
+  
+  // Link quality
+  uint32 rssi_dbm = 11;           // Received signal strength (-120 to 0 dBm)
+  float link_quality = 12;        // 0.0 to 1.0
+}
+
+// Neighbor state estimate (used by distributed observers)
+// Transmitted between drones for formation control
+message NeighborStateEstimate {
+  uint32 estimator_id = 1;        // Drone making the estimate
+  uint32 neighbor_id = 2;         // Drone being estimated
+  Vector3 estimated_position = 3;
+  Vector3Vel estimated_velocity = 4;
+  int64 estimate_age_us = 5;      // Age of estimate (microseconds)
+  float estimate_confidence = 6;  // 0.0 to 1.0
+}
